@@ -5,6 +5,7 @@ import com.example.weatherviewer.exception.UserAlreadyExistsException;
 import com.example.weatherviewer.repository.UserRepository;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
@@ -28,6 +29,11 @@ public class UserService {
         return userRepository.save(newUser);
     }
 
+    @Transactional(readOnly = true)
+    public Optional<User> findById(Integer id){
+        return userRepository.findById(id);
+    }
+    @Transactional(readOnly = true)
     public Optional<User> findByLogin(String login){
         return userRepository.findByLogin(login);
     }

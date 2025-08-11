@@ -24,4 +24,10 @@ public class Session {
     @Column(name = "expires_at", nullable = false)
     @NotNull(message = "Expiration time must be specified")
     private LocalDateTime expiresAt;
+
+    public Session(UUID id, User user, LocalDateTime expiresAt) {
+        this.id = id;
+        this.user = user;
+        this.expiresAt = expiresAt;
+    }
 }
