@@ -1,6 +1,7 @@
 package com.example.weatherviewer.service;
 
 import com.example.weatherviewer.entity.User;
+import com.example.weatherviewer.exception.InvalidCredentialsException;
 import com.example.weatherviewer.exception.UserAlreadyExistsException;
 import com.example.weatherviewer.repository.UserRepository;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -29,6 +30,21 @@ public class UserService {
         return userRepository.save(newUser);
     }
 
+    public User authenticate(String login, String password) {
+        Optional<User> userOpt = userRepository.findByLogin(login);
+        if (userOpt.isEmpty()){
+            throw new InvalidCredentialsException("Invalid login or password");
+        }
+
+        User user = userOpt.get();
+
+        if (!passwordEncoder.matches(password, user.getPassword())){
+            throw new InvalidCredentialsException("Invalid login or password");
+        }
+
+        return user;
+    }
+
     @Transactional(readOnly = true)
     public Optional<User> findById(Integer id){
         return userRepository.findById(id);
@@ -38,8 +54,8 @@ public class UserService {
         return userRepository.findByLogin(login);
     }
 
-    public boolean checkPassword(User user, String password){
-        return passwordEncoder.matches(password, user.getPassword());
-    }
+//    public boolean checkPassword(User user, String password){
+//        return passwordEncoder.matches(password, user.getPassword());
+//    }
 
 }

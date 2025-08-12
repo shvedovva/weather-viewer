@@ -2,12 +2,14 @@ package com.example.weatherviewer.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
-import lombok.Data;
+import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-@Data
+@Getter
+@Setter
+
 @Entity
 @Table(name = "sessions")
 public class Session {
@@ -25,9 +27,21 @@ public class Session {
     @NotNull(message = "Expiration time must be specified")
     private LocalDateTime expiresAt;
 
-    public Session(UUID id, User user, LocalDateTime expiresAt) {
-        this.id = id;
+    public Session() {
+        this.id = UUID.randomUUID();
+    }
+
+    public Session(User user, int hoursToLive){
+        this();
         this.user = user;
-        this.expiresAt = expiresAt;
+        this.expiresAt = LocalDateTime.now().plusHours(hoursToLive);
+    }
+
+    public boolean isExpired() {
+        return LocalDateTime.now().isAfter(expiresAt);
+    }
+
+    public void extendSession(int hours){
+        this.expiresAt = LocalDateTime.now().plusHours(hours);
     }
 }

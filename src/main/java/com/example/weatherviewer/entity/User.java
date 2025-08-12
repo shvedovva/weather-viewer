@@ -9,7 +9,10 @@ import lombok.*;
 import java.util.ArrayList;
 import java.util.List;
 
-@Data
+@Getter
+@Setter
+@NoArgsConstructor
+
 @Entity
 @Table(name = "users")
 public class User {
@@ -18,14 +21,16 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
+
+    @NotBlank(message = "Login is required")
+    @Size(min = 3, max = 50, message = "Login must be between 3 and 50 characters")
     @Column(unique = true, nullable = false)
-    @NotBlank(message = "Login cannot be empty")
-    @Email(message = "Login must be a valid email")
     private String login;
 
-    @Column(nullable = false)
+
     @NotBlank(message = "Password cannot be empty")
     @Size(min = 6, message = "Password must be at least 6 characters")
+    @Column(nullable = false)
     private String password;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)

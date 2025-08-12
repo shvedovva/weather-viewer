@@ -3,11 +3,14 @@ package com.example.weatherviewer.entity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import lombok.Data;
+import lombok.*;
 
 import java.math.BigDecimal;
 
-@Data
+@Getter
+@Setter
+@NoArgsConstructor
+
 @Entity
 @Table(name = "locations")
 public class Location {
@@ -32,4 +35,11 @@ public class Location {
     @Column(precision = 10, scale = 7, nullable = false)
     @NotNull(message = "Longitude must be specified")
     private BigDecimal longitude;
+
+    public Location(String name, User user, BigDecimal latitude, BigDecimal longitude) {
+        this.name = name;
+        this.user = user;
+        this.latitude = latitude;
+        this.longitude = longitude;
+    }
 }
