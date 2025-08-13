@@ -36,6 +36,12 @@ public class Location {
     @NotNull(message = "Longitude must be specified")
     private BigDecimal longitude;
 
+    @Column(name = "country")
+    private String country;
+
+    @Column(name = "state")
+    private String state;
+
     public Location(String name, User user, BigDecimal latitude, BigDecimal longitude) {
         this.name = name;
         this.user = user;
