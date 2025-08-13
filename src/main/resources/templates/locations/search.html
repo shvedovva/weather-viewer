@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/layout :: layout(~{::title}, ~{::main})}">
+<head>
+    <title>Weather Viewer - Search Locations</title>
+</head>
+<body>
+<main>
+    <div class="row">
+        <div class="col-12">
+            <h2>Search Locations</h2>
+
+            <!-- Search Form -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <form action="/locations/search" method="get">
+                        <div class="input-group">
+                            <input type="text" name="query" class="form-control"
+                                   placeholder="Enter city name..."
+                                   th:value="${query}" required>
+                            <button class="btn btn-primary" type="submit">Search</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Search Results -->
+            <div th:if="${results != null}">
+                <h3>Search Results</h3>
+
+                <div th:if="${results.empty}" class="alert alert-info">
+                    No locations found for "<span th:text="${query}"></span>"
+                </div>
+
+                <div th:unless="${results.empty}" class="row">
+                    <div class="col-md-6 col-lg-4 mb-3" th:each="location : ${results}">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <h5 class="card-title" th:text="${location.name}"></h5>
+                                <p class="card-text">
+                                    <small class="text-muted">
+                                        <span th:text="${location.state}" th:if="${location.state != null}"></span>
+                                        <span th:if="${location.state != null and location.country != null}">, </span>
+                                        <span th:text="${location.country}" th:if="${location.country != null}"></span>
+                                    </small>
+                                </p>
+
+                                <form th:action="@{/locations/add}" method="post">
+                                    <input type="hidden" name="name" th:value="${location.name}">
+                                    <input type="hidden" name="latitude" th:value="${location.latitude}">
+                                    <input type="hidden" name="longitude" th:value="${location.longitude}">
+                                    <input type="hidden" name="country" th:value="${location.country}" th:if="${location.country != null}">
+                                    <input type="hidden" name="state" th:value="${location.state}" th:if="${location.state != null}">
+                                    <button type="submit" class="btn btn-primary btn-sm">Add to My Locations</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+</body>
+</html>

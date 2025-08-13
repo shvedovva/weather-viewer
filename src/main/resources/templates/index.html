@@ -1,38 +1,90 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/layout :: layout(~{::title}, ~{::main})}">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title th:text="${title} ?: 'Погода'">Погода</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Подключите CSS из верстки, если используете предоставленную -->
+    <title>Weather Viewer - Home</title>
 </head>
 <body>
-<header class="bg-dark text-white p-3 mb-4">
-    <div class="container">
-        <h1 class="mb-0">Погода</h1>
-        <div th:if="${currentUser == null}">
-            <a href="/login" class="btn btn-outline-light me-2">Вход</a>
-            <a href="/register" class="btn btn-primary">Регистрация</a>
+<main>
+    <div th:if="${user != null}">
+        <!-- Search Form -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title">Search Location</h5>
+                <form action="/locations/search" method="get">
+                    <div class="input-group">
+                        <input type="text" name="query" class="form-control"
+                               placeholder="Enter city name..." required>
+                        <button class="btn btn-primary" type="submit">Search</button>
+                    </div>
+                </form>
+            </div>
         </div>
-        <div th:if="${currentUser != null}">
-            <span>Привет, <span th:text="${currentUser.login}">Пользователь</span>!</span>
-            <form th:action="@{/logout}" method="post" class="d-inline">
-                <button type="submit" class="btn btn-outline-light">Выход</button>
-            </form>
+
+        <!-- Locations List -->
+        <div th:if="${locations != null and !locations.isEmpty()}">
+            <h3>My Locations</h3>
+            <div class="row">
+                <div class="col-md-6 col-lg-4 mb-3" th:each="location : ${locations}">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h5 class="card-title" th:text="${location.displayName}"></h5>
+
+                            <div th:if="${weatherMap != null and weatherMap[location.id] != null}"
+                                 th:with="weather=${weatherMap[location.id]}">
+                                <div class="weather-info">
+                                    <div class="temperature">
+                                            <span class="temp-value"
+                                                  th:text="${#numbers.formatDecimal(weather.main.temp, 0, 'COMMA', 0, 'POINT')}">--</span>°C
+                                    </div>
+                                    <div class="weather-description"
+                                         th:text="${weather.weather != null and !#arrays.isEmpty(weather.weather) ? weather.weather[0].description : 'No data'}"></div>
+                                    <div class="weather-details">
+                                        <small th:if="${weather.main != null and weather.main.feelsLike != null}">
+                                            Feels like:
+                                            <span th:text="${#numbers.formatDecimal(weather.main.feelsLike, 0, 'COMMA', 0, 'POINT')}"></span>°C
+                                        </small><br>
+                                        <small th:if="${weather.main != null and weather.main.humidity != null}">
+                                            Humidity:
+                                            <span th:text="${weather.main.humidity}"></span>%
+                                        </small><br>
+                                        <small th:if="${weather.wind != null and weather.wind.speed != null}">
+                                            Wind:
+                                            <span th:text="${weather.wind.speed}"></span> m/s
+                                        </small>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div th:unless="${weatherMap != null and weatherMap[location.id] != null}" class="text-muted">
+                                Weather data unavailable
+                            </div>
+
+                            <form th:action="@{/locations/delete/{id}(id=${location.id})}"
+                                  method="post" class="mt-3">
+                                <button type="submit" class="btn btn-danger btn-sm"
+                                        onclick="return confirm('Remove this location?')">Remove</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div th:if="${locations == null or locations.isEmpty()}" class="alert alert-info">
+            <h4>No locations added yet</h4>
+            <p>Search for a city and add it to your weather dashboard!</p>
         </div>
     </div>
-</header>
 
-<main class="container">
-    <!--div th:replace="${content}"></div> <!-- Для замены контента -->
-    <!-- Или просто используйте th:fragment в дочерних шаблонах -->
+    <div th:unless="${user != null}" class="text-center py-5">
+        <h2>Welcome to Weather Viewer</h2>
+        <p class="lead">Track weather in your favorite locations</p>
+        <div class="mt-4">
+            <a href="/auth/login" class="btn btn-primary btn-lg me-2">Login</a>
+            <a href="/auth/register" class="btn btn-outline-primary btn-lg">Register</a>
+        </div>
+    </div>
 </main>
-
-<footer class="bg-dark text-white text-center p-3 mt-4">
-    &copy; 2025 Приложение Погода
-</footer>
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

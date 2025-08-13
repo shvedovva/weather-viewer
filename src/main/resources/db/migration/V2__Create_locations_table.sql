@@ -4,6 +4,8 @@ CREATE TABLE locations (
     user_id INTEGER NOT NULL,
     latitude DECIMAL(10, 7) NOT NULL,
     longitude DECIMAL(10, 7) NOT NULL,
+    country VARCHAR(100),
+    state VARCHAR(100),
     CONSTRAINT fk_locations_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 

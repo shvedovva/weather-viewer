@@ -1,25 +1,29 @@
 package com.example.weatherviewer.controller;
 
+import com.example.weatherviewer.dto.WeatherDto;
+import com.example.weatherviewer.entity.Location;
 import com.example.weatherviewer.entity.Session;
 import com.example.weatherviewer.entity.User;
+import com.example.weatherviewer.service.LocationService;
 import com.example.weatherviewer.service.SessionService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
-import java.util.Collections;
-import java.util.Optional;
-import java.util.UUID;
-
+import java.util.*;
+@Controller
 public class HomeController {
 
     private final SessionService sessionService;
-    //private final LocationService locationService;
+    private final LocationService locationService;
+
     @Autowired
-    public HomeController(SessionService sessionService) {
+    public HomeController(SessionService sessionService, LocationService locationService) {
         this.sessionService = sessionService;
+        this.locationService = locationService;
     }
 
     @GetMapping("/")
@@ -28,31 +32,15 @@ public class HomeController {
         if (userOpt.isPresent()){
             User user = userOpt.get();
             model.addAttribute("user", user);
+
+            List<Location> locations = locationService.getUserLocations(user);
+            Map<Integer, WeatherDto> weatherMap = locationService.getWeatherForLocations(locations);
+
+            model.addAttribute("locations", locations);
+            model.addAttribute("weatherMap", weatherMap);
         }
 
-
-//        User currentUser = getCurrentUser(request);
-//        model.addAttribute("currentUser", currentUser);
-//        model.addAttribute("title", "Главная");
-//        model.addAttribute("locations", Collections.emptyList());
         return "index";
     }
 
-//    private User getCurrentUser(HttpServletRequest request) {
-//        Cookie[] cookies = request.getCookies();
-//        if (cookies != null){
-//            for (Cookie cookie : cookies){
-//                if ("SID".equals(cookie.getName())){
-//                    try {
-//                        UUID sessionId = UUID.fromString(cookie.getValue());
-//                        Optional<Session> sessionOpt = sessionService.getSessionById(sessionId);
-//                        return sessionOpt.map(Session::getUser).orElse(null);
-//                    } catch (IllegalArgumentException e) {
-//                        // Невалидный UUID
-//                    }
-//                }
-//            }
-//        }
-//        return null;
-//    }
 }
