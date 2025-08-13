@@ -48,4 +48,15 @@ public class Location {
         this.latitude = latitude;
         this.longitude = longitude;
     }
+
+    public String getDisplayName() {
+        StringBuilder sb = new StringBuilder(this.name);
+        if (this.state != null && !this.state.isEmpty()) {
+            sb.append(", ").append(this.state);
+        }
+        if (this.country != null && !this.country.isEmpty()) {
+            sb.append(", ").append(this.country);
+        }
+        return sb.toString();
+    }
 }
