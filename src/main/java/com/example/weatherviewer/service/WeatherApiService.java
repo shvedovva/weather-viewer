@@ -13,7 +13,7 @@ import org.springframework.web.reactive.function.client.WebClientResponseExcepti
 import java.math.BigDecimal;
 import java.util.List;
 
-@Service
+//@Service
 public class WeatherApiService {
     private static final String BASE_URL = "https://api.openweathermap.org";
     private static final String GEO_API_PATH = "/geo/1.0/direct";

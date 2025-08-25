@@ -19,16 +19,24 @@ import java.util.concurrent.ConcurrentHashMap;
 @Service
 public class LocationService {
     private final LocationRepository locationRepository;
-    private final WeatherApiService weatherApiService;
+    //private final WeatherApiService weatherApiService;
+    private final WeatherRestTemplateService weatherRestTemplateService;
 
-    @Autowired
-    public LocationService(LocationRepository locationRepository, WeatherApiService weatherApiService) {
+//    @Autowired
+//    public LocationService(LocationRepository locationRepository, WeatherApiService weatherApiService) {
+//        this.locationRepository = locationRepository;
+//        this.weatherApiService = weatherApiService;
+//    }
+
+
+    public LocationService(LocationRepository locationRepository, WeatherRestTemplateService weatherRestTemplateService) {
         this.locationRepository = locationRepository;
-        this.weatherApiService = weatherApiService;
+        this.weatherRestTemplateService = weatherRestTemplateService;
     }
 
     public List<LocationSearchDto> searchLocations(String query) {
-        return weatherApiService.searchLocations(query);
+//        return weatherApiService.searchLocations(query);
+        return weatherRestTemplateService.searchLocations(query);
     }
 
     public Location addLocation(User user, String name, BigDecimal latitude,
@@ -56,7 +64,8 @@ public class LocationService {
 
         for (Location location : locations) {
             try {
-                WeatherDto weather = weatherApiService.getWeather(location.getLatitude(), location.getLongitude());
+                //WeatherDto weather = weatherApiService.getWeather(location.getLatitude(), location.getLongitude());
+                WeatherDto weather = weatherRestTemplateService.getWeather(location.getLatitude(), location.getLongitude());
                 if (weather != null) {
                     weatherMap.put(location.getId(), weather);
                 }
